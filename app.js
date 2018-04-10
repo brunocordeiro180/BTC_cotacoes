@@ -1,99 +1,74 @@
-var express = require('express');
-var mysql = require('mysql');
-var session = require('express-session');
-var bodyparse = require('body-parser');
-var CoinMarketCap = require("node-coinmarketcap");
-var cron = require('node-cron');
-var md5 = require('md5');
-var app = express();
+var express = require('express'); //pacote para definir rotas
+var mysql = require('mysql'); //pacote para acessa BD
+var session = require('express-session'); //pacote para criar SESSION
+var bodyparse = require('body-parser'); //pacote para enviar e receber dados das views
+var CoinMarketCap = require("node-coinmarketcap");//api para retornar cotacao atual do btc
+var cron = require('node-cron'); //pacote para agendar tarefas
+var md5 = require('md5'); //pacote para critografar dados
 
+var app = express(); //"app" criado para se usar o express
 var moeda;
 var valor;
 var data;
-var exchange;
 
+var sess; //variavel para criar sessao
+var coinmarketcap = new CoinMarketCap(); //preparando api para uso
 
-var sess;
-var coinmarketcap = new CoinMarketCap();
-
-app.use(session({
+app.use(session({ //criacao da SESSION
     secret: 'shssssss',
     proxy: true,
     resave: true,
     saveUninitialized: true
 }));
 
+//configurações gerais para se usar body-parser e express
 app.use(bodyparse.urlencoded({ extended: false}));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyparse.json());
 app.set("view engine", "ejs");
 app.engine('html', require('ejs').renderFile);
 
-+new Date
-
-
-//create connection
-
+//criando conexão no banco de dados
 var db = mysql.createConnection({
 	host : 'localhost',
 	user :  'root',
 	password: '',
-	database: 'nodemysql',
+	database: 'nodemysql2', //nome do banco
 	insecureAuth : true
 });
 
+//estabelecendo conexão
 db.connect((err) => {
-	if(err){
+	if(err){//se ocorrer erro com conexão erro é impresso
 		throw err;
 	}
 	console.log("mysql connect");
 });
 
-//create db
-
-app.get('/createdb', (req,res) => {
-	sess=req.session;
-	let sql = 'CREATE DATABASE nodemysql';
-	db.query(sql, (err, result) => {
-		if(err) throw err;
-		console.log(result);
-		res.send('database created ....');
-	})
-})
-
-//create table
-
-app.get('/createusertable', (req,res) => {
-	// sess=req.session;
-	let sql = "CREATE TABLE users(id int AUTO_INCREMENT, email varchar(50), senha VARCHAR(35), PRIMARY KEY (id))";
-	db.query(sql, (err, result) => {
-		if(err) throw err;
-		console.log(result);
-		res.send('table created ....');
-	})
-})
-
+//rota para se cadastrar
 app.get('/user/new', (req,res) => {
 	sess=req.session;
 	res.render("sign_up");
 })
 
+//post para inserir novo usuario no banco
 app.post('/users', (req,res) => {
 	sess=req.session;
+	//md5 usado em senha para codifica-la
 	let sql = "INSERT INTO users(email, senha) values ('" + req.body.email + "','" + md5(req.body.password) + "')";
 	db.query(sql, (err, result) => {
 		if(err) {
 			throw err;
 			res.render("sign_up");	
-		}else{
-			res.redirect("login", {failed : 0});
+		}else{//variavel failed usada para o alert 
+			res.render("login", {failed : 0});
 		}
 	})
 })
 
+//rota para a pagina de login
 app.get("/login", function(req,res,next) {
-	sess=req.session;
-	// res.render("login");
+	sess=req.session; //utilizando sessao na pagina
 
 	if(sess.email){
 		res.redirect("cotacoes");
@@ -104,26 +79,29 @@ app.get("/login", function(req,res,next) {
 	}
 })
 
+//rota para pagina inicial
 app.get("/", function(req,res){
 	sess=req.session;
 
 	// sess.email;
 	// sess.id;
-
-	res.render("welcome");
+	if (!sess.email) {
+		res.render("welcome", {email : null});
+	}else{
+		res.render("cotacoes");
+	}
 })
 
+//rota para procurar usuario ao realizar login
 app.post("/login", function(req,res){
-	var senha = req.body.password;
+	var senha = req.body.password; //var senha = senha passada pelo form do login
 	var id;
 	sess=req.session;
 
-	senha = md5(senha);
+	senha = md5(senha); //passando senha para o formato md5
 	let sql = "SELECT * FROM users where email ='" + req.body.email +"' and senha ='" + senha + "'";
 	db.query(sql, (err, resultSet) => {
-		if(resultSet.length <= 0) {
-			// throw err;
-			// alert("email ou senha incorretos");
+		if(resultSet.length <= 0) {//verifica se nao foram encontrados resultados no banco
 			console.log("usuario nao encontrado");
 			res.render("login", {failed : 1});	
 		}else{
@@ -131,12 +109,13 @@ app.post("/login", function(req,res){
 			id = resultSet[0].id;
 			sess.id_user = id;
 			// console.log(resultSet);
-			res.redirect("cotacoes");
+			// res.render("cotacoes", {cotacoes : resultSet, email : sess.email});
+			res.redirect('/cotacoes');
 		}
 	})
 })
 
-
+//logout para destruir sessao
 app.get('/logout',function(req,res){
 	req.session.destroy(function(err) {
  		if(err) {
@@ -159,7 +138,7 @@ app.get("/cotacoes", function(req,res) {
 		    price = coin.price_usd;
 		    symbol = coin.symbol;
 
-			let sql = "SELECT * FROM cotacoes";
+			let sql = "SELECT * FROM cotacoes"; //pega cotacoes adicionadas no banco pelo cron e manda para view
 			db.query(sql, (err, resultSet) => {
 				if(resultSet.length <= 0) {
 					console.log("cotacoes nao encontradas");
@@ -174,10 +153,12 @@ app.get("/cotacoes", function(req,res) {
 
 
 	}else{
+		//se usuario tentar acessar essaa pagina sem estar logado é redirecionado para o login
 		res.render("login", {failed : 0});	
 	}
 })
 
+//pagina para listar as ordens do usuario
 app.get('/ordens', function(req, res){
 	sess=req.session;
 
@@ -193,10 +174,11 @@ app.get('/ordens', function(req, res){
 		})
 	}
 	else{
-		res.redirect('login');
+		res.redirect('login');//se usuario tentar acessar essaa pagina sem estar logado é redirecionado para o login
 	}
 })
 
+//rota para a pagina de criação de ordem
 app.get('/criar_ordem', function(req,res){
 	sess=req.session;
 
@@ -207,6 +189,7 @@ app.get('/criar_ordem', function(req,res){
 	}
 })
 
+//post para adicionar ordem no banco
 app.post('/ordem/new', function(req,res){
 	sess = req.session;
 
@@ -226,20 +209,21 @@ app.post('/ordem/new', function(req,res){
 	});
 })
 
-app.listen('3000', () => {
+app.listen('3000', () => { //abrindo a aplicação na porta 3000
 	console.log("Server started");
 });
 
-cron.schedule('*/1 * * * *', function(){
+//inicializacao do cron para agendar inserçao de cotacoes no banco
+cron.schedule('*/1 * * * *', function(){ //roda escopo a cada 1 minuto
   console.log('running a task every minute');
 
-	coinmarketcap.get("bitcoin", coin => {
+	coinmarketcap.get("bitcoin", coin => {//pegando dados da cotacao atual com API
 		moeda = coin.symbol;
 		valor = coin.price_usd;
 		data = +new Date;
 	});
 
-	if(moeda && valor){
+	if(moeda && valor){ //verifica se a API pegou os dados corretamente
 
 	  let sql = "INSERT INTO cotacoes(moeda, valor) values ('"+moeda+"','"+valor+"');";
 		db.query(sql, (err, result) => {
