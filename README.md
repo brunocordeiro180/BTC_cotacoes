@@ -23,9 +23,7 @@ node app.js
 
 Acesse o localhost:3000
 
-```
-[localhost](http://localhost:3000/)
-```
+* [Página inicial](http://localhost:3000/) 
 
 End with an example of getting some data out of the system or using it for a little demo
 
