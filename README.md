@@ -13,7 +13,7 @@ Para rodar a aplicação siga as instruções
 
 ### Installing
 
-Primeiramente abra seu banco de dados e execute o código sql encontrado em db.sql
+**Primeiramente abra seu banco de dados e execute o código sql encontrado em db.sql**
 
 Dentro da pasta BTC_cotacoes no terminal execute o arquivo app.js
 
