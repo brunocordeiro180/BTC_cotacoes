@@ -13,7 +13,12 @@ Para rodar a aplicação siga as instruções
 
 ### Installing
 
-**Primeiramente abra seu banco de dados e execute o código sql encontrado em db.sql**
+**Primeiramente abra seu banco de dados e execute o código sql encontrado em "db.sql"**
+O arquivo "db.sql" ja cria o banco para você então não se preocupe com isso.
+Nome do banco: "nodemysql"
+Nome do usuário: "root"
+Senha do usuário do banco: ""
+Configuração do banco se encontra no começo do arquivo "app.js"
 
 Dentro da pasta BTC_cotacoes no terminal execute o arquivo app.js
 
