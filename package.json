@@ -1,0 +1,32 @@
+{
+  "name": "processo_seletivo",
+  "version": "1.0.0",
+  "description": "Processo seletivo para estágio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bruno Cordeiro Mendes",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "bootstrap-node": "^1.0.0",
+    "cron": "^1.3.0",
+    "crypto-price": "0.0.4",
+    "ejs": "^2.5.8",
+    "ejs-lint": "^0.3.0",
+    "express": "^4.16.3",
+    "express-graphql": "^0.6.12",
+    "express-session": "^1.15.6",
+    "graphql": "^0.13.2",
+    "md5": "^2.2.1",
+    "mysql": "^2.15.0",
+    "node-coinmarketcap": "^0.2.0",
+    "node-cron": "^1.2.1",
+    "npm": "^5.8.0",
+    "poloniex-api-node": "^1.8.1"
+  },
+  "devDependencies": {
+    "babel-preset-latest-node": "^1.0.0"
+  }
+}
