@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS `cotacoes`;
 CREATE TABLE `cotacoes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `moeda` varchar(45) NOT NULL,
-  `valor` int(11) NOT NULL,
+  `valor` double(11,2) NOT NULL,
   `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `exchange` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -45,8 +45,8 @@ CREATE TABLE `ordens` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `usuarioid` int(11) NOT NULL,
   `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `qtdbtc` int(11) NOT NULL,
-  `valorporbtc` int(11) NOT NULL,
+  `qtdbtc` double(11,2) NOT NULL,
+  `valorporbtc` double(11,2) NOT NULL,
   `tipo` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ordens_ibfk_1_idx` (`usuarioid`),

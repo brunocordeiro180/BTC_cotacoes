@@ -88,7 +88,7 @@ app.get("/", function(req,res){
 	if (!sess.email) {
 		res.render("welcome", {email : null});
 	}else{
-		res.render("cotacoes");
+		res.redirect("cotacoes");
 	}
 })
 
@@ -145,8 +145,9 @@ app.get("/cotacoes", function(req,res) {
 					res.render("cotacoes", {email : sess.email, btc_symbol : btc_symbol, btc_price : btc_price, date : new Date()});	
 				}else{
 					console.log('cotacoes antigas encontradas');
+					// console.log(typeof price);
+					// console.log(typeof cotacoes[2].valor)
 					res.render("cotacoes", {email : sess.email, btc_symbol : symbol, btc_price : price, date : new Date(), cotacoes : resultSet});	
-
 				}
 			})
 		});
