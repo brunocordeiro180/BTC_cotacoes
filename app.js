@@ -33,7 +33,7 @@ var db = mysql.createConnection({
 	host : 'localhost',
 	user :  'root',
 	password: '',
-	database: 'nodemysql2', //nome do banco
+	database: 'nodemysql', //nome do banco
 	insecureAuth : true
 });
 
@@ -142,7 +142,7 @@ app.get("/cotacoes", function(req,res) {
 			db.query(sql, (err, resultSet) => {
 				if(resultSet.length <= 0) {
 					console.log("cotacoes nao encontradas");
-					res.render("cotacoes", {email : sess.email, btc_symbol : btc_symbol, btc_price : btc_price, date : new Date()});	
+					res.render("cotacoes", {email : sess.email, btc_symbol : symbol, cotacoes : null, btc_price : price, date : new Date()});	
 				}else{
 					console.log('cotacoes antigas encontradas');
 					// console.log(typeof price);

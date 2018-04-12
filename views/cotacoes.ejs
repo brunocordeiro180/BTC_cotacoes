@@ -1,4 +1,7 @@
-<%  var ultimo =  Object.keys(cotacoes).length - 1 %>
+<!-- Calcula posicao do ultimo elemento do arrya -->
+<%  if(cotacoes){ 
+  var ultimo =  Object.keys(cotacoes).length - 1; 
+}%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,14 +50,18 @@
 					<th>Moeda</th>
 					<th>Valor</th> 
 					<th>Data</th>
+					<% if(cotacoes){ %>
 					<th>% que subiu</th>
+					<% } %>
 					<th>Exchange</th>
 				</tr>
 				<tr>
 					<td><%= btc_symbol %></td>
 					<td>US$ <%= btc_price %></td> 
 					<td><%= date %></td>
+					<% if(cotacoes){ %>
 					<td id="porcentagem"><%= ((Number(btc_price) - Number(cotacoes[ultimo].valor))/Number(cotacoes[ultimo].valor)) * 100 %>%</td>
+					<% } %>
 					<td>------</td>
 				</tr>
 			</table>
