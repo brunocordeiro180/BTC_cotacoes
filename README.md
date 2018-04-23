@@ -1,6 +1,6 @@
 # BTC_cotacoes
 
-API para retornar Cotação Atual do BitCoin e simular criação de ordens.
+API para retornar Cotação Atual do BitCoin e simular criação de ordens. Na API existe uma cron que insere a cotação do BITCOIN a cada 1 minuto. Para ver as cotações inseridas atualize a página.
 
 ## Getting Started
 
